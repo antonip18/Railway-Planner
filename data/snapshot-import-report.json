@@ -1,0 +1,27 @@
+{
+  "source_fingerprint": "7e0cfdb7aaa3a39f66834a07fc19c09ab60e521f51f43e93c6cf12e10ffad408",
+  "agencies": [
+    "IC"
+  ],
+  "source_trips": 3732,
+  "commercial_trains": 579,
+  "schedule_variants": 1221,
+  "identical_trip_aliases": 2511,
+  "dated_runs": 18833,
+  "stations": 532,
+  "replacement_bus_variants": 78,
+  "transfer_types": {
+    "1": 431
+  },
+  "first_service_date": "2026-05-08",
+  "last_service_date": "2026-06-09",
+  "published_start_date": "20260510",
+  "published_end_date": "20260609",
+  "skipped_modes": 0,
+  "rejected_trips": [],
+  "synthetic_fields": [
+    "carriage layouts",
+    "default train consists"
+  ],
+  "couplings_inferred_from_suffixes": 0
+}

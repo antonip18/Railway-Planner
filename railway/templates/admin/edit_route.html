@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block content %}
+  <a class="back" href="{{ url_for('admin.routes') }}">← Trasy</a>
+  <h1 class="page-title">{{ 'Edytuj trasę' if route else 'Nowa trasa' }}</h1>
+  <form class="card" method="post" id="route-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="form-grid">
+      <label>
+        Numer pociągu<input name="number"
+                            maxlength="100"
+                            value="{{ request.form.get('number',route.train.number if route else '') }}"
+                            required>
+      </label>
+      <label>
+        Nazwa<input name="name"
+                    maxlength="200"
+                    value="{{ request.form.get('name',route.train.name if route else '') }}">
+      </label>
+      <label>
+        Kategoria<input name="category"
+                        maxlength="40"
+                        value="{{ request.form.get('category',route.category if route else 'IC') }}"
+                        required>
+      </label>
+    </div>
+    <h2>Postoje</h2>
+    <p class="muted">Godziny po północy zapisuj jako 24:15, 25:30 itd. Kolejność postojów jest kolejnością jazdy.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Stacja</th>
+            <th>Przyjazd</th>
+            <th>Odjazd</th>
+            <th>Peron</th>
+            <th>Tor</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="stop-rows">
+          {% for stop in form_stops %}
+            <tr>
+              <td>
+                <select name="station_id" required>
+                  {% for station in stations %}
+                    <option value="{{ station.id }}"
+                            {% if stop and station.id|string==stop.station_id|string %}selected{% endif %}>{{ station.name }}</option>
+                  {% endfor %}
+                </select>
+              </td>
+              <td>
+                <input name="arrival"
+                       placeholder="08:00"
+                       value="{{ stop.arrival }}"
+                       required>
+              </td>
+              <td>
+                <input name="departure"
+                       placeholder="08:05"
+                       value="{{ stop.departure }}"
+                       required>
+              </td>
+              <td>
+                <input name="platform"
+                       maxlength="40"
+                       value="{{ stop.platform or '' if stop else '' }}">
+              </td>
+              <td>
+                <input name="track"
+                       maxlength="40"
+                       value="{{ stop.track or '' if stop else '' }}">
+              </td>
+              <td>
+                <button type="button"
+                        class="text-button"
+                        data-remove-row
+                        aria-label="Usuń postój">×</button>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <button type="button" class="secondary" data-add-stop>+ Dodaj postój</button>
+    <h2>Daty kursowania</h2>
+    <label>
+      Daty RRRR-MM-DD, oddzielone przecinkami<textarea name="dates" rows="3" required>{{ request.form.get('dates',route.runs|map(attribute='service_date')|join(', ') if route else '') }}</textarea>
+    </label>
+    <h2>Skład demonstracyjny</h2>
+    <div id="carriage-rows">
+      {% for carriage in form_cars %}
+        <div class="carriage-input">
+          <select name="carriage_type">
+            {% for type in types %}
+              <option value="{{ type.id }}"
+                      {% if carriage and carriage|string==type.id|string %}selected{% endif %}>{{ type.name }}</option>
+            {% endfor %}
+          </select>
+          <button type="button"
+                  class="text-button"
+                  data-remove-carriage
+                  aria-label="Usuń wagon">×</button>
+        </div>
+      {% endfor %}
+    </div>
+    <button type="button" class="secondary" data-add-carriage>+ Dodaj wagon do składu</button>
+    <div class="form-actions">
+      <button class="primary">Zapisz trasę</button>
+    </div>
+  </form>
+{% endblock %}

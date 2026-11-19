@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>{% block title %}Railway — rozkład i składy{% endblock %}</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static',filename='css/app.css') }}">
+    <script src="{{ url_for('static',filename='js/app.js') }}" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="{{ url_for('public.index') }}">
+        <span class="brand-mark">R</span> railway<span class="brand-dot">.</span>
+      </a>
+      <nav aria-label="Nawigacja">
+        <a href="{{ url_for('public.index') }}">Podróż</a>
+        <a href="{{ url_for('public.trains') }}">Pociągi</a>
+        <a href="{{ url_for('admin.index') }}">Panel zarządzania</a>
+        {% if session.admin %}
+          <form method="post" action="{{ url_for('auth.logout') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="text-button">Wyloguj</button>
+          </form>
+        {% endif %}
+      </nav>
+    </header>
+    <main>
+      {% for category,message in get_flashed_messages(with_categories=true) %}
+        <div class="notice {{ category }}" role="status">{{ message }}</div>
+      {% endfor %}
+      {% block content %}{% endblock %}
+    </main>
+    <footer>
+      <div>
+        <strong>Railway</strong> · rozkład, przesiadki i całe składy.
+      </div>
+      {% if dataset %}
+        <div>
+          {% if dataset.report.demo %}
+            <span class="badge amber">Dane demonstracyjne</span>
+          {% else %}
+            <span class="badge">Migawka rozkładu</span>
+          {% endif %} {{ dataset.start_date }} — {{ dataset.end_date }} · Tabor i układy miejsc są przykładowe.</div>
+        <details>
+          <summary>Źródło danych</summary>
+          <p>{{ dataset.name }} · wersja {{ dataset.version or '—' }}. Dane przetworzone na potrzeby projektu; nie służą do planowania rzeczywistej podróży.</p>
+          {% for attribution in dataset.attributions %}
+            <p>{{ attribution.organization_name }}{% if attribution.attribution_url and attribution.attribution_url.startswith("https://") %} · <a href="{{ attribution.attribution_url }}" rel="noreferrer">Źródło</a>
+          {% endif %}
+        </p>
+      {% endfor %}
+    </details>
+  {% endif %}
+</footer>
+</body>
+</html>

@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block content %}
+  <a class="back" href="{{ url_for('public.index') }}">← Wyszukiwarka</a>
+  <p class="eyebrow">SZCZEGÓŁY PODRÓŻY</p>
+  <h1 class="page-title">
+    Każdy odcinek <span>pod kontrolą.</span>
+  </h1>
+  {% for section in sections %}
+    {% set leg = section.leg %}
+    {% if leg.connection=="stay" %}
+      <div class="continuation">
+        <strong>Jedź dalej bez przesiadki</strong>
+        <span>Kontynuacja podróży w tym samym składzie. Wszystkie jego wagony jadą dalej.</span>
+      </div>
+    {% elif leg.connection=="transfer" %}
+      <div class="notice">Przesiadka · przejdź do następnego pociągu lub autobusu.</div>
+    {% endif %}
+    <section class="card detail-section">
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">ODCINEK {{ loop.index }} · DZIEŃ ROZKŁADOWY {{ leg.run.service_date }}</span>
+          <h2>{{ leg.run.route.train.label }}</h2>
+        </div>
+        <span class="badge">{{ 'Autobus zastępczy' if leg.run.route.mode=='bus' else 'Pociąg' }}</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Stacja</th>
+              <th>Przyjazd</th>
+              <th>Odjazd</th>
+              <th>Peron / tor</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for stop in section.stops %}
+              <tr>
+                <td>
+                  <strong>{{ stop.station.name }}</strong>
+                </td>
+                <td>
+                  {{ stop.arrival.strftime("%H:%M") }}<small>{{ stop.arrival.strftime("%d.%m") }}</small>
+                </td>
+                <td>
+                  {{ stop.departure.strftime("%H:%M") }}<small>{{ stop.departure.strftime("%d.%m") }}</small>
+                </td>
+                <td>{{ stop.platform or '—' }} / {{ stop.track or '—' }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="route-map" aria-label="Schemat kolejnych postojów">
+        <ol class="route-stations">
+          {% for stop in section.stops %}
+            <li>
+              <span class="route-node"></span>
+              <span>{{ stop.station.name }}</span>
+            </li>
+          {% endfor %}
+        </ol>
+      </div>
+      <div class="section-heading">
+        <h3>Skład pociągu</h3>
+        <span class="muted">Układy demonstracyjne</span>
+      </div>
+      {% if section.stock %}
+        <div class="stock-view"
+             data-stock='{{ section.stock|tojson|forceescape }}'>
+          <div class="wagon-tabs"></div>
+          <div class="wagon-caption"></div>
+          <div class="wagon-scroll">
+            <div class="wagon-grid"></div>
+          </div>
+          <div class="legend">
+            <span>
+              <i>
+              </i>Miejsce</span>
+              <span>
+                <i class="prm">
+                </i>PRM</span>
+                <span>
+                  <i class="bike">
+                  </i>Rower</span>
+                  <span>
+                    <i class="table-seat">
+                    </i>Stolik</span>
+                  </div>
+                </div>
+      {% else %}
+        <p class="muted">Dla autobusu nie prezentujemy układu wagonów.</p>
+      {% endif %}
+    </section>
+  {% endfor %}
+  <script src="{{ url_for('static',filename='js/stock.js') }}" defer></script>
+{% endblock %}

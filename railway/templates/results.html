@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+  <a class="back" href="{{ url_for('public.index') }}">← Zmień kryteria</a>
+  <p class="eyebrow">TWOJE POŁĄCZENIA · {{ day }}</p>
+  <h1 class="page-title">{{ source.name }} <span>→</span> {{ target.name }}</h1>
+  <p class="muted">Odjazdy w ciągu 24 godzin od podanej godziny. Najwcześniejsze przyjazdy jako pierwsze.</p>
+  {% for journey,token in results %}
+    <article class="card journey-card">
+      <div class="section-heading">
+        <div class="badges">
+          {% for leg in journey.legs %}
+            <span class="badge {% if leg.run.route.mode=='bus' %}amber{% endif %}">{{ 'ZKA' if leg.run.route.mode=='bus' else leg.run.route.category }} {{ leg.run.route.train.number }}</span>
+          {% endfor %}
+        </div>
+        <span class="muted">{{ journey.transfers }} przesiadek{% if journey.legs|selectattr("connection","equalto","stay")|list %} · kontynuacja w tym samym składzie{% endif %}
+        </span>
+      </div>
+      <div class="journey-summary">
+        <div>
+          <strong class="big-time">{{ journey.legs[0].local_departure.strftime("%H:%M") }}</strong>
+          <p>{{ source.name }}</p>
+          <small>{{ journey.legs[0].local_departure.strftime("%d.%m.%Y") }}</small>
+        </div>
+        <div class="journey-line">
+          <span>{{ journey.minutes//60 }} godz. {{ journey.minutes%60 }} min</span>
+          <div></div>
+        </div>
+        <div>
+          <strong class="big-time">{{ journey.legs[-1].local_arrival.strftime("%H:%M") }}</strong>
+          <p>{{ target.name }}</p>
+          <small>{{ journey.legs[-1].local_arrival.strftime("%d.%m.%Y") }}</small>
+        </div>
+        <a class="primary" href="{{ url_for('public.journey',token=token) }}">Zobacz podróż →</a>
+      </div>
+    </article>
+  {% else %}
+    <div class="card empty">
+      <h2>Brak połączeń dla tych kryteriów</h2>
+      <p>Sprawdź zakres dat rozkładu lub zmień godzinę, stacje i liczbę przesiadek.</p>
+    </div>
+  {% endfor %}
+{% endblock %}

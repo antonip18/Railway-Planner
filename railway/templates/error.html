@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+  <section class="card empty">
+    <h1>Nie udało się wykonać operacji</h1>
+    <p>{{ message }}</p>
+    <a class="primary" href="{{ url_for('public.index') }}">Wróć do wyszukiwarki</a>
+  </section>
+{% endblock %}

@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block content %}
+  <section class="hero">
+    <div>
+      <p class="eyebrow">TWOJA PODRÓŻ ZACZYNA SIĘ TUTAJ</p>
+      <h1>
+        Dobra trasa.
+        <br>
+        <span>Dobry początek.</span>
+      </h1>
+      <p class="lead">Znajdź połączenie, sprawdź przesiadki i poznaj skład pociągu, zanim wyruszysz.</p>
+    </div>
+    <div class="network-art" aria-hidden="true">
+      <svg viewBox="0 0 380 210">
+        <path d="M25 160H115L190 85H355 M25 40H105L190 125H355 M190 85V125" />
+        <g>
+        <circle cx="25" cy="160" r="8" />
+        <circle cx="25" cy="40" r="8" />
+        <circle cx="190" cy="85" r="10" />
+        <circle cx="190" cy="125" r="10" />
+        <circle cx="355" cy="85" r="8" />
+        <circle cx="355" cy="125" r="8" />
+        </g>
+        <text x="18" y="191">PUNKT WYJŚCIA</text>
+        <text x="240" y="57">WSPÓLNA DROGA</text>
+      </svg>
+    </div>
+  </section>
+  <section class="card search-card">
+    <div class="section-heading">
+      <h2>Dokąd jedziemy?</h2>
+      <span class="badge">Połączenia do 2 przesiadek</span>
+    </div>
+    {% if stations %}
+      <form action="{{ url_for('public.search') }}" method="get">
+        <div class="search-fields">
+          <label>
+            Skąd<select name="start" required>
+            {% for station in stations %}
+              <option value="{{ station.id }}"
+                      {% if station.name=='Kraków Główny' %}selected{% endif %}>{{ station.name }}</option>
+            {% endfor %}
+            </select>
+          </label>
+          <button type="button" class="swap" data-swap aria-label="Zamień stacje">⇄</button>
+          <label>
+            Dokąd<select name="end" required>
+            {% for station in stations %}
+              <option value="{{ station.id }}"
+                      {% if station.name=='Gdańsk Główny' %}selected{% endif %}>{{ station.name }}</option>
+            {% endfor %}
+            </select>
+          </label>
+          <label>
+            Data<input type="date" name="date" value="{{ day }}" required>
+          </label>
+          <label>
+            Od godziny<input type="time" name="time" value="07:00" required>
+          </label>
+        </div>
+        <div class="search-bottom">
+          <div class="options">
+            <label>
+              Przesiadki<select name="transfers">
+              <option value="2">Do dwóch</option>
+              <option value="1">Do jednej</option>
+              <option value="0">Bez przesiadek</option>
+              </select>
+            </label>
+            <label>
+              Min. czas (min)<input name="minimum" type="number" min="0" max="120" value="5">
+            </label>
+            <label class="check">
+              <input type="checkbox" name="wheelchair" value="1">Miejsce PRM
+            </label>
+            <label class="check">
+              <input type="checkbox" name="bicycle" value="1">Rower
+            </label>
+          </div>
+          <button class="primary">
+            Znajdź połączenie <span>→</span>
+          </button>
+        </div>
+        <p class="muted">Filtry PRM i roweru dotyczą przykładowych składów, nie potwierdzonych danych przewoźnika.</p>
+      </form>
+    {% else %}
+      <p>Brak rozkładu. Uruchom <code>flask --app railway seed-demo</code> lub zaimportuj GTFS zgodnie z README.</p>
+    {% endif %}
+  </section>
+  <div class="stats">
+    <div>
+      <strong>{{ counts.trains }}</strong>
+      <span>Pociągów</span>
+    </div>
+    <div>
+      <strong>{{ counts.variants }}</strong>
+      <span>Wariantów rozkładu</span>
+    </div>
+    <div>
+      <strong>{{ counts.stations }}</strong>
+      <span>Stacji i przystanków</span>
+    </div>
+  </div>
+  <section class="feature-grid">
+    <article>
+      <span class="feature-number">01</span>
+      <h3>Pełny obraz podróży</h3>
+      <p>Godziny i daty każdego odcinka, także gdy podróż trwa przez północ.</p>
+    </article>
+    <article>
+      <span class="feature-number">02</span>
+      <h3>Dwa składy, jedna trasa</h3>
+      <p>Po połączeniu pociągów możesz pozostać w swoim wagonie i jechać dalej.</p>
+    </article>
+    <article>
+      <span class="feature-number">03</span>
+      <h3>Miejsce dla Twoich potrzeb</h3>
+      <p>Sprawdź układ wagonu i dostępność udogodnień w przykładowym składzie.</p>
+    </article>
+  </section>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+  <a class="back" href="{{ url_for('admin.index') }}">← Panel</a>
+  <p class="eyebrow">TABOR DEMONSTRACYJNY</p>
+  <h1 class="page-title">Składy i układy miejsc</h1>
+  <p class="lead">Wagony są przypisane do bazowych składów. Łączenie pociągów obejmuje zawsze cały skład.</p>
+  {% for train in page.items %}
+    <article class="card">
+      <h2>{{ train.label }}</h2>
+      <div class="badges">
+        {% for carriage in train.carriages %}
+          <span class="badge">{{ carriage.position }} · {{ carriage.carriage_type.name }}</span>
+        {% endfor %}
+      </div>
+      <form class="inline-form" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="train_id" value="{{ train.id }}">
+        <select name="type_id" aria-label="Typ dodatkowego wagonu">
+          {% for type in types %}
+            <option value="{{ type.id }}">{{ type.name }}</option>
+          {% endfor %}
+        </select>
+        <button class="secondary">Dodaj do składu</button>
+      </form>
+    </article>
+  {% endfor %}
+  {% include "pagination.html" %}
+{% endblock %}

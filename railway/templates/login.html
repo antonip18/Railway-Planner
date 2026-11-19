@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+  <section class="card login">
+    <p class="eyebrow">PANEL ZARZĄDZANIA</p>
+    <h1>Zaloguj się</h1>
+    <form method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label>
+        Hasło administratora<input type="password"
+                                   name="password"
+                                   autocomplete="current-password"
+                                   required>
+      </label>
+      <button class="primary">Zaloguj</button>
+    </form>
+    <p class="muted">Pierwsze uruchomienie? Ustaw hasło poleceniem opisanym w README.</p>
+  </section>
+{% endblock %}

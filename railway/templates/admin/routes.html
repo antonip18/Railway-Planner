@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">ZARZĄDZANIE ROZKŁADEM</p>
+      <h1 class="page-title">Trasy i kursy</h1>
+    </div>
+    <a class="primary" href="{{ url_for('admin.edit_route') }}">+ Nowa trasa</a>
+  </div>
+  <div class="card table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Pociąg / wariant</th>
+          <th>Odjazd</th>
+          <th>Źródło</th>
+          <th>Operacje</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for route in page.items %}
+          <tr>
+            <td>
+              <strong>{{ route.train.label }}</strong>
+              <small>{{ route.name }}</small>
+            </td>
+            <td>{{ route.stops[0].departure|clock }}</td>
+            <td>{{ 'GTFS' if route.dataset_id else 'Własny' }}</td>
+            <td>
+              {% if not route.dataset_id %}
+                <a class="secondary"
+                   href="{{ url_for('admin.edit_route',route_id=route.id) }}">Edytuj</a>
+                <form class="inline"
+                      action="{{ url_for('admin.remove_route',route_id=route.id) }}"
+                      method="post"
+                      data-confirm="Usunąć tę trasę i jej daty kursowania?">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button class="danger">Usuń</button>
+                </form>
+              {% else %}
+                <span class="muted">Tylko odczyt</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% include "pagination.html" %}
+{% endblock %}

@@ -1,0 +1,9 @@
+<nav class="pagination" aria-label="Strony">
+  {% if page.has_prev %}
+    <a href="?page={{ page.prev_num }}&q={{ query|default('')|urlencode }}">← Poprzednia</a>
+  {% endif %}
+  <span>Strona {{ page.page }} z {{ [page.pages,1]|max }}</span>
+  {% if page.has_next %}
+    <a href="?page={{ page.next_num }}&q={{ query|default('')|urlencode }}">Następna →</a>
+  {% endif %}
+</nav>
